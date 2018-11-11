@@ -1,9 +1,9 @@
 <?php 
 namespace FerencBalogh\Szamlazzhu;
 
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Facade as BaseFacade;
 
-class SzamlazzFacade extends Facade
+class Facade extends BaseFacade
 {
     public static function getFacadeAccessor()
     {

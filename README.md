@@ -1,7 +1,6 @@
-# Billingo API Provider for Laravel
+# Szamlazz.hu
 
-This package is a Billingo API service provider and facade for Laravel 5.1+.
-
+This package is a szamlazz.hu service provider and facade for Laravel
 
 
 ## Installing
@@ -9,100 +8,28 @@ This package is a Billingo API service provider and facade for Laravel 5.1+.
 You have to use Composer to install the library
 
 ```
-composer require trisztan/billingo-api-laravel
+composer require ferencbalogh/szamlazz
 ```
-
-Find the `providers` array in the `config/app.php` file and add the Billingo Service Provider:
-
-```php
-'providers' => [
-  // ...
-  Billingo\API\Laravel\BillingoServiceProvider::class
-];
-```
-
-Now find the `aliases` array in the same config file and add the Billingo Facade class:
-
-```php
-'aliases' => [
-  // ...
-  'Billingo' => Billingo\API\Laravel\BillingoFacade::class
-];
-```
-
 
 
 ## Config
-
-Before you can use the Billingo service provider you have configure it with your API keys. You can access your API keys here: [https://www.billingo.hu/api](https://www.billingo.hu/api)
-
-In the command line type the following:
 
 ```
 php artisan vendor:publish --provider="Billingo\API\Laravel\BillingoServiceProvider" --tag=config
 ```
 
-This command will generate a `billingo.php` file inside your config directory (usually `config/`). Enter your API creditentials here.
+This command will generate a `szamlazz.php` file inside your config directory (usually `config/`). Enter your API creditentials here.
 
 Or you can use enviroment (.env) file and add the following constants with pub/private key.
 
 ```php
-BILLINGO_PUBLIC_KEY=
-BILLINGO_PRIVATE_KEY=
+SZAMLAZZ_USERNAME=
+SZAMLAZZ_PASSWORD=
+SZAMLAZZ_APIURL=https://www.szamlazz.hu/
+SZAMLAZZ_TIMEOUT=30
 ```
-
-
-
-
 
 ## Usage
-
-### Get resource
-
 ```php
-// Return the list of clients
-$clients = Billingo::get('clients');
-
-// Return one client
-$client = Billingo::get('clients/123456789');
+$receipt = Szamlazz::createReceipt();
 ```
-
-
-
-### Save resource
-
-```php
-// save a new client
-$clientData = [
-  "name" => "Gigazoom LLC.",
-  "email" => "rbrooks5@amazon.com",
-  "billing_address" => [
-      "street_name" => "Moulton",
-      "street_type" => "Terrace",
-      "house_nr" => "2797",
-      "city" => "Preston",
-      "postcode" => "PR1",
-      "country" => "United Kingdom"
-  ]
-]
-Billingo::post('clients', $clientData);
-```
-
-
-
-### Update resource
-
-```php
-// save client
-Billingo::put('clients/123456789', $newData);
-```
-
-
-
-### Delete resource
-
-```php
-// delete client
-Billingo::delete('clients/123456789');
-```
-

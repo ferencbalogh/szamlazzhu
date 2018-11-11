@@ -3,7 +3,8 @@
     "description": "Szamlazz.hu wrapper",
     "minimum-stability": "stable",
     "license": "MIT",
-    "authors": [{
+    "authors": [
+        {
             "name": "Balogh Ferenc",
             "email": "baloghferenclevente@gmail.com"
         }
@@ -23,5 +24,5 @@
                 "FerencBalogh\\Szamlazz\\ServiceProvider"
             ]
         }
-    },
+    }
 }

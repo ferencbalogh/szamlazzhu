@@ -3,6 +3,7 @@
 namespace FerencBalogh\Szamlazzhu;
 
 use FerencBalogh\Szamlazzhu\Receipt;
+use FerencBalogh\Szamlazzhu\Exceptions\InvalidUserException;
 
 class Szamlazz
 {
@@ -30,7 +31,7 @@ class Szamlazz
     protected function checkConnection()
     {
         if (config('szamlazz.username') === null || $this->password === null) {
-            throw new InvalidArgumentException('missing username and password');
+            throw new InvalidUserException('Missing username and password. Setup .env variables please.');
         }
     }
 }

@@ -13,7 +13,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-  
+
     }
 
     /**
@@ -23,13 +23,16 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $this->publishes([$configPath => $publishPath], 'config');
-        $this->publishes([$this->configPath() => config_path('szamlazz.php')]);
+        $this->publishes([$this->configPath() => config_path('szamlazz.php')], 'config');
     }
-    
+
+    /**
+     * Congfiguration file location
+     *
+     * @return string
+     */
     protected function configPath()
     {
         return __DIR__ . '/../config/szamlazz.php';
     }
-
 }

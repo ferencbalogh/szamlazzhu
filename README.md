@@ -20,7 +20,7 @@ php artisan vendor:publish --provider="Billingo\API\Laravel\BillingoServiceProvi
 
 This command will generate a `szamlazz.php` file inside your config directory (usually `config/`). Enter your API creditentials here.
 
-Or you can use enviroment (.env) file and add the following constants with pub/private key.
+Or you can use enviroment (.env) file and add the following variables.
 
 ```php
 SZAMLAZZ_USERNAME=

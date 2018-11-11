@@ -7,8 +7,7 @@ class Receipt
 
     public function handler()
     {
-
-
+        return "szamla";
     }
 
 }

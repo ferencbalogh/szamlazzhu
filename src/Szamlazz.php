@@ -19,8 +19,9 @@ class Szamlazz
      */
     public function createReceipt()
     {
+
         $receipt = new Receipt();
-        $receipt->handler();
+        echo $receipt->handler();
     }
 
     /**

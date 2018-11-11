@@ -1,5 +1,5 @@
 <?php 
-namespace FerencBalogh\Szamlazz;
+namespace FerencBalogh\Szamlazzhu;
 
 use Illuminate\Support\Facades\Facade;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace FerencBalogh\Szamlazz;
+namespace FerencBalogh\Szamlazzhu;
 
-use FerencBalogh\Szamlazz\Receipt;
+use FerencBalogh\Szamlazzhu\Receipt;
 
 class Szamlazz
 {

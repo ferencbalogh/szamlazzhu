@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "FerencBalogh\\Szamlazz\\": "src/"
+            "FerencBalogh\\Szamlazzhu\\": "src/"
         }
     },
     "require": {
@@ -21,8 +21,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "FerencBalogh\\Szamlazz\\ServiceProvider"
-            ]
+                "FerencBalogh\\Szamlazzhu\\ServiceProvider"
+            ],
+            "aliases": {
+                "Szamlazz": "FerencBalogh\\Szamlazzhu\\Facade"
+            }
         }
-    }
+    },
 }

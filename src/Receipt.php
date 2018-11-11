@@ -1,6 +1,6 @@
 <?php
 
-namespace FerencBalogh\Szamlazz;
+namespace FerencBalogh\Szamlazzhu;
 
 class Receipt
 {

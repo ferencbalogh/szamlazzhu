@@ -72,7 +72,7 @@ class Receipt
     private function sendXML($xmlfile = 'nyugta.xml', $rendelesszam, $date)
     {
         if (!file_exists(storage_path('data/nyugta/' . $date . '/pdf'))) {
-            mkdir(storage_path('data/nyugta/' . $date . '/pdf', 0755, true);
+            mkdir(storage_path('data/nyugta/' . $date . '/pdf', 0755, true));
         }
 
         $ch = curl_init("https://www.szamlazz.hu/szamla/");

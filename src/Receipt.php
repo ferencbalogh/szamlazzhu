@@ -58,7 +58,7 @@ class Receipt
             mkdir(storage_path('data/nyugta'), 0755, true);
         }
 
-        if (!file_exists(storage_path('data/nyugta/' . $date)) {
+        if (!file_exists(storage_path('data/nyugta/' . $date))) {
             mkdir(storage_path('data/nyugta/' . $date), 0755, true);
         }
 

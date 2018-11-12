@@ -31,7 +31,7 @@ class Receipt
         $beallitasok->addChild('felhasznalo', env('SZAMLAZZ_USERNAME'));
         $beallitasok->addChild('jelszo', env('SZAMLAZZ_PASSWORD'));
         if ($this->download) {
-            $beallitasok->addChild('szamlaLetoltes', 'true');
+            $beallitasok->addChild('pdfLetoltes', 'true');
         }
 
         $fejlec = $szamla->addChild('fejlec');

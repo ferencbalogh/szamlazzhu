@@ -1,6 +1,7 @@
 <?php
 
 namespace FerencBalogh\Szamlazzhu;
+use Log;
 
 class Receipt
 {
@@ -77,9 +78,17 @@ class Receipt
         fwrite($file, $xml);
         fclose($file);
 
-        return $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->rendelesszam . '.xml'),
+        $data = $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->rendelesszam . '.xml'),
             $this->rendelesszam, $date);
-        //$this->sendReceiptInEmail($thnyugtaszam, $this->email, $this->targy, $this->uzenet);
+
+        if($data['body']['xmlnyugtavalasz']['sikeres'] == true)
+        {
+            $nyugtaszam = $data['body']['xmlnyugtavalasz']['nyugta']['alap']['nyugtaszam'];
+            $this->sendReceiptInEmail($nyugtaszam, $this->email, $this->targy, $this->uzenet);
+            return $data;
+        }
+
+        Log::debug($data);
     }
 
     private function sendXML($xmlfile = 'nyugta.xml', $rendelesszam, $date)
@@ -108,29 +117,108 @@ class Receipt
         if (file_exists($cookie_file) && filesize($cookie_file) > 0) {
             curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
         }
-        $content = curl_exec($ch);
+        curl_exec($ch);
         curl_close($ch);
         fclose($fp);
-        dd($content);
+
         if (mime_content_type($pdf) == 'text/plain') {
             $result = false;
         } else {
             $result = true;
         }
+
+        $xmlNode = simplexml_load_file($pdf);
+        $arrayData = $this->xmlToArray($xmlNode);
+        Log::debug($arrayData);
         $response = array(
             'result' => $result,
-            'body'   => $pdf
+            'body'   => $arrayData
         );
         return $response;
     }
 
+    public function xmlToArray($xml, $options = array()) {
+        $defaults = array(
+            'namespaceSeparator' => ':',//you may want this to be something other than a colon
+            'attributePrefix' => '@',   //to distinguish between attributes and nodes with the same name
+            'alwaysArray' => array(),   //array of xml tag names which should always become arrays
+            'autoArray' => true,        //only create arrays for tags which appear more than once
+            'textContent' => '$',       //key used for the text content of elements
+            'autoText' => true,         //skip textContent key if node has no attributes or child nodes
+            'keySearch' => false,       //optional search and replace on tag and attribute names
+            'keyReplace' => false       //replace values for above search values (as passed to str_replace())
+        );
+        $options = array_merge($defaults, $options);
+        $namespaces = $xml->getDocNamespaces();
+        $namespaces[''] = null; //add base (empty) namespace
+
+        //get attributes from all namespaces
+        $attributesArray = array();
+        foreach ($namespaces as $prefix => $namespace) {
+            foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
+                //replace characters in attribute name
+                if ($options['keySearch']) $attributeName =
+                    str_replace($options['keySearch'], $options['keyReplace'], $attributeName);
+                $attributeKey = $options['attributePrefix']
+                    . ($prefix ? $prefix . $options['namespaceSeparator'] : '')
+                    . $attributeName;
+                $attributesArray[$attributeKey] = (string)$attribute;
+            }
+        }
+
+        //get child nodes from all namespaces
+        $tagsArray = array();
+        foreach ($namespaces as $prefix => $namespace) {
+            foreach ($xml->children($namespace) as $childXml) {
+                //recurse into child nodes
+                $childArray = $this->xmlToArray($childXml, $options);
+                list($childTagName, $childProperties) = each($childArray);
+
+                //replace characters in tag name
+                if ($options['keySearch']) $childTagName =
+                    str_replace($options['keySearch'], $options['keyReplace'], $childTagName);
+                //add namespace prefix, if any
+                if ($prefix) $childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
+
+                if (!isset($tagsArray[$childTagName])) {
+                    //only entry with this key
+                    //test if tags of this type should always be arrays, no matter the element count
+                    $tagsArray[$childTagName] =
+                        in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
+                            ? array($childProperties) : $childProperties;
+                } elseif (
+                    is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
+                    === range(0, count($tagsArray[$childTagName]) - 1)
+                ) {
+                    //key already exists and is integer indexed array
+                    $tagsArray[$childTagName][] = $childProperties;
+                } else {
+                    //key exists so convert to integer indexed array with previous value in position 0
+                    $tagsArray[$childTagName] = array($tagsArray[$childTagName], $childProperties);
+                }
+            }
+        }
+
+        //get text content of node
+        $textContentArray = array();
+        $plainText = trim((string)$xml);
+        if ($plainText !== '') $textContentArray[$options['textContent']] = $plainText;
+
+        //stick it all together
+        $propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
+            ? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
+
+        //return node as array
+        return array(
+            $xml->getName() => $propertiesArray
+        );
+    }
     private function sendReceiptInEmail($nyugtaszam, $email, $targy, $uzenet)
     {
         $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlnyugtasend xmlns="http://www.szamlazz.hu/xmlnyugtasend" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlnyugtasend xmlnyugtasend.xsd"></xmlnyugtasend>');
         $beallitasok = $szamla->addChild('beallitasok');
         $beallitasok->addChild('felhasznalo', env('SZAMLAZZ_USERNAME'));
         $beallitasok->addChild('jelszo', env('SZAMLAZZ_PASSWORD'));
-        $beallitasok->addChild('pdfLetoltes', 'true');
 
         $fejlec = $szamla->addChild('fejlec');
         $fejlec->addChild('nyugtaszam', $nyugtaszam);

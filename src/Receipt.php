@@ -26,7 +26,8 @@ class Receipt
 
     public function createReceipt()
     {
-        $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlszamla xmlns="http://www.szamlazz.hu/xmlszamla" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlszamla xmlszamla.xsd"></xmlszamla>');
+        $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlnyugtacreate xmlns="http://www.szamlazz.hu/xmlnyugtacreate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlnyugtacreate xmlnyugtacreate.xsd"></xmlszamla>');
+
         $beallitasok = $szamla->addChild('beallitasok');
         $beallitasok->addChild('felhasznalo', env('SZAMLAZZ_USERNAME'));
         $beallitasok->addChild('jelszo', env('SZAMLAZZ_PASSWORD'));

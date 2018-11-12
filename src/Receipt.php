@@ -47,8 +47,8 @@ class Receipt
         $tetel->addChild('nettoEgysegar', $this->netto);
         $tetel->addChild('afakulcs', '27');
         $tetel->addChild('nettoErtek', $this->netto);
-        $tetel->addChild('afaErtek', ($this->netto * 1.27) - $netto);
-        $tetel->addChild('bruttoErtek', ($this->netto * 1.27);
+        $tetel->addChild('afaErtek', (($this->netto * 1.27) - $netto));
+        $tetel->addChild('bruttoErtek', ($this->netto * 1.27));
         $tetel->addChild('megjegyzes', '');
         $xml = $szamla->asXML();
 

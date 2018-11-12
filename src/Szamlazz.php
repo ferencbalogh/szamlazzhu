@@ -29,7 +29,7 @@ class Szamlazz
      */
     protected function checkConnection()
     {
-        if (config('szamlazz.username') === null || $this->password === null) {
+        if (config('szamlazz.username') === null || config('szamlazz.password') === null) {
             throw new InvalidUserException('Missing username and password. Setup .env variables please.');
         }
     }

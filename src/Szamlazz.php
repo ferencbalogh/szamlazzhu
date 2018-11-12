@@ -18,9 +18,16 @@ class Szamlazz
     /**
      * Create receipt
      */
-    public function createReceipt($elotag, $fizmod, $rendelesszam, $netto, $download)
-    {
-        $receipt = new Receipt($elotag, $fizmod, $rendelesszam, $netto, $download);
+    public function createReceipt(
+        $elotag,
+        $fizmod,
+        $rendelesszam,
+        $brutto,
+        $email,
+        $targy,
+        $uzenet
+    ) {
+        $receipt = new Receipt($elotag, $fizmod, $rendelesszam, $brutto, $email, $targy, $uzenet);
         return $receipt->createReceipt();
     }
 

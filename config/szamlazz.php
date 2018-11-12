@@ -4,5 +4,6 @@ return [
     'password' => env('SZAMLAZZ_PASSWORD'),
     'apiurl'   => env('SZAMLAZZ_APIURL', 'https://www.szamlazz.hu/'),
     'timeout'   => env('SZAMLAZZ_TIMEOUT', 30),
+    'email'   => env('SZAMLAZZ_EMAIL'),
 
 ];

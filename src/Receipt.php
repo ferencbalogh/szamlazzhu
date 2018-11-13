@@ -1,7 +1,7 @@
 <?php
 
 namespace FerencBalogh\Szamlazzhu;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class Receipt
 {
@@ -182,7 +182,7 @@ class Receipt
                 //recurse into child nodes
                 $childArray = $this->xmlToArray($childXml, $options);
                 list($childTagName, $childProperties) = $this->myEach($childArray);
-         
+
                 //replace characters in tag name
                 if ($options['keySearch']) $childTagName =
                     str_replace($options['keySearch'], $options['keyReplace'], $childTagName);

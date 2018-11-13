@@ -289,6 +289,7 @@ class Receipt
             'result' => $result,
             'body'   => $pdf
         );
+
         return $response;
     }
 }

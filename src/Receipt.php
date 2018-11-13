@@ -51,6 +51,8 @@ class Receipt
         $fejlec->addChild('elotag', $this->elotag);
         $fejlec->addChild('fizmod', 'bankártya');
         $fejlec->addChild('penznem', 'HUF');
+        $fejlec->addChild('hivasAzonosito', $this->rendelesszam);
+        $fejlec->addChild('megjegyzes', 'Rendelés azonosító: '.$this->rendelesszam);
 
         $tetelek = $szamla->addChild('tetelek');
         $tetel = $tetelek->addChild('tetel');
@@ -81,7 +83,8 @@ class Receipt
         $data = $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->rendelesszam . '.xml'),
             $this->rendelesszam, $date);
 
-        if($data['body']['xmlnyugtavalasz']['sikeres'] == true)
+
+        if($data['body']['xmlnyugtavalasz']['sikeres'] == 'true')
         {
             $nyugtaszam = $data['body']['xmlnyugtavalasz']['nyugta']['alap']['nyugtaszam'];
             $this->sendReceiptInEmail($nyugtaszam, $this->email, $this->targy, $this->uzenet);
@@ -223,11 +226,11 @@ class Receipt
         $fejlec = $szamla->addChild('fejlec');
         $fejlec->addChild('nyugtaszam', $nyugtaszam);
 
-        $email = $szamla->addChild('emailKuldes');
-        $email->addChild('email', $email);
-        $email->addChild('emailReplyto',config('szamlazz.email'));
-        $email->addChild('emailTargy', $targy);
-        $email->addChild('emailSzoveg', $uzenet);
+        $emailKuldes = $szamla->addChild('emailKuldes');
+        $emailKuldes->addChild('email', $email);
+        $emailKuldes->addChild('emailReplyto',config('szamlazz.email'));
+        $emailKuldes->addChild('emailTargy', $targy);
+        $emailKuldes->addChild('emailSzoveg', $uzenet);
 
         $xml = $szamla->asXML();
 

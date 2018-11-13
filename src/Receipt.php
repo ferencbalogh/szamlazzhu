@@ -139,6 +139,12 @@ class Receipt
         );
         return $response;
     }
+    public function myEach(&$arr) {
+        $key = key($arr);
+        $result = ($key === null) ? false : [$key, current($arr), 'key' => $key, 'value' => current($arr)];
+        next($arr);
+        return $result;
+    }
 
     public function xmlToArray($xml, $options = array()) {
         $defaults = array(
@@ -175,8 +181,8 @@ class Receipt
             foreach ($xml->children($namespace) as $childXml) {
                 //recurse into child nodes
                 $childArray = $this->xmlToArray($childXml, $options);
-                list($childTagName, $childProperties) = each($childArray);
-
+                list($childTagName, $childProperties) = $this->myEach($childArray);
+         
                 //replace characters in tag name
                 if ($options['keySearch']) $childTagName =
                     str_replace($options['keySearch'], $options['keyReplace'], $childTagName);

@@ -26,6 +26,7 @@ class ReceiptDelete
         $fejlec = $szamla->addChild('fejlec');
         $fejlec->addChild('nyugtaszam',$this->receipt);
 
+        $xml = $szamla->asXML();
         $date = date('Ym');
 
         if (!file_exists(storage_path('data/nyugta'))) {

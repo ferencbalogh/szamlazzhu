@@ -16,7 +16,7 @@ class ReceiptDelete
 
     public function deleteReceipt()
     {
-        $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlnyugtacreate xmlns="http://www.szamlazz.hu/xmlnyugtast" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlnyugtast xmlnyugtast.xsd"></xmlnyugtacreate>');
+        $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlnyugtast xmlns="http://www.szamlazz.hu/xmlnyugtast" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlnyugtast xmlnyugtast.xsd"></xmlnyugtast>');
 
         $beallitasok = $szamla->addChild('beallitasok');
         $beallitasok->addChild('felhasznalo', env('SZAMLAZZ_USERNAME'));

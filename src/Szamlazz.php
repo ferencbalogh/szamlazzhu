@@ -29,14 +29,9 @@ class Szamlazz
     /**
      * Delete receipt
      */
-    public function deleteReceipt($nyugtaszam)
+    public function deleteReceipt($nyugtaszam, $email, $targy, $uzenet)
     {
-        if (empty($nyugtaszam))
-        {
-            throw new InvalidDeleteReceiptException('All fields required to be filled. (nyugtaszam)');
-        }
-
-        $receipt = new ReceiptDelete($nyugtaszam);
+        $receipt = new ReceiptDelete($nyugtaszam, $email, $targy, $uzenet);
         return $receipt->deleteReceipt();
     }
     /**

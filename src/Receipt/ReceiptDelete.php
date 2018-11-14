@@ -9,9 +9,15 @@ class ReceiptDelete
     use XmlHelper;
 
     private $receipt;
+    private $email;
+    private $targy;
+    private $uzenet;
 
-    public function __construct($receipt) {
+    public function __construct($receipt, $email, $targy, $uzenet) {
         $this->receipt = $receipt;
+        $this->email = $email;
+        $this->targy = $targy;
+        $this->uzenet = $uzenet;
     }
 
     public function deleteReceipt()
@@ -41,9 +47,63 @@ class ReceiptDelete
         fwrite($file, $xml);
         fclose($file);
 
-        return $data = $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->receipt . '_storno.xml'),
+        $data = $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->receipt . '_storno.xml'),
             $this->receipt, $date);
 
+        if($data['body']['xmlnyugtavalasz']['sikeres'] == 'true')
+        {
+            $this->sendReceiptInEmail($this->receipt, $this->email, $this->targy, $this->uzenet);
+            return $data;
+        }
+
+        Log::debug($data);
+
+    }
+
+    private function sendXML($xmlfile = 'nyugta.xml', $receipt, $date)
+    {
+        if (!file_exists(storage_path('data/nyugta/' . $date . '/pdf'))) {
+            mkdir(storage_path('data/nyugta/' . $date . '/pdf', 0755, true));
+        }
+
+        $ch = curl_init("https://www.szamlazz.hu/szamla/");
+        $pdf = storage_path('data/nyugta/' . $date . '/pdf/' . $receipt . '.xml');
+        $cookie_file = storage_path('data/nyugta/nyugta_storno_cookie.txt');
+        if (!file_exists($cookie_file)) {
+            $cookie = fopen($cookie_file, 'w');
+            fwrite($cookie, '');
+            fclose($cookie);
+        }
+        $fp = fopen($pdf, "w");
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,
+            array('action-szamla_agent_nyugta_storno' => new \CURLFile(realpath($xmlfile))));
+        curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
+        if (file_exists($cookie_file) && filesize($cookie_file) > 0) {
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
+        }
+        curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+
+        if (mime_content_type($pdf) == 'text/plain') {
+            $result = false;
+        } else {
+            $result = true;
+        }
+
+        $xmlNode = simplexml_load_file($pdf);
+        $arrayData = $this->xmlToArray($xmlNode);
+        Log::debug($arrayData);
+        $response = array(
+            'result' => $result,
+            'body'   => $arrayData
+        );
+        return $response;
     }
 
     private function sendEmail($xmlfile = 'nyugta.xml', $receipt, $date)

@@ -23,7 +23,7 @@ class Szamlazz
      */
     public function createReceipt($elotag, $fizmod, $rendelesszam, $brutto, $email, $targy, $uzenet)
     {
-        if (empty($elotag) ||empty($fizmod) || empty($rendelesszam) || empty($brutto || empty($email) ||empty($targy) || empty($uzenet))
+        if (empty($elotag) || empty($fizmod) || empty($rendelesszam) || empty($brutto) || empty($email) ||empty($targy) || empty($uzenet))
         {
             throw new InvalidCreateReceiptException('All fields required to be filled. (elotag,fizeztésimód,brutto,targy,uzenet)');
         }

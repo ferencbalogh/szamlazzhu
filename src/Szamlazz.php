@@ -37,7 +37,7 @@ class Szamlazz
         }
 
         $receipt = new ReceiptDelete($nyugtaszam);
-        return $receipt-deleteReceipt();
+        return $receipt->deleteReceipt();
     }
     /**
      * Check Username & Password

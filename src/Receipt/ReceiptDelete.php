@@ -52,7 +52,7 @@ class ReceiptDelete
 
         if($data['body']['xmlnyugtavalasz']['sikeres'] == 'true')
         {
-            $this->sendReceiptInEmail($this->receipt, $this->email, $this->targy, $this->uzenet);
+            $this->sendEmail($this->receipt, $this->email, $this->targy, $this->uzenet);
             return $data;
         }
 

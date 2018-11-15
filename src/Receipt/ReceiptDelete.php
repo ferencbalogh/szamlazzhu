@@ -52,7 +52,7 @@ class ReceiptDelete
 
         if($data['body']['xmlnyugtavalasz']['sikeres'] == 'true')
         {
-            $this->sendEmail($this->receipt, $this->email, $this->targy, $this->uzenet);
+            $this->sendReceiptInEmail($this->receipt, $this->email, $this->targy, $this->uzenet);
             return $data;
         }
 
@@ -106,15 +106,50 @@ class ReceiptDelete
         return $response;
     }
 
-    private function sendEmail($xmlfile = 'nyugta.xml', $receipt, $date)
+    private function sendReceiptInEmail($nyugtaszam, $email, $targy, $uzenet)
+    {
+        $szamla = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><xmlnyugtasend xmlns="http://www.szamlazz.hu/xmlnyugtasend" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.szamlazz.hu/xmlnyugtasend xmlnyugtasend.xsd"></xmlnyugtasend>');
+        $beallitasok = $szamla->addChild('beallitasok');
+        $beallitasok->addChild('felhasznalo', env('SZAMLAZZ_USERNAME'));
+        $beallitasok->addChild('jelszo', env('SZAMLAZZ_PASSWORD'));
+
+        $fejlec = $szamla->addChild('fejlec');
+        $fejlec->addChild('nyugtaszam', $nyugtaszam);
+
+        $emailKuldes = $szamla->addChild('emailKuldes');
+        $emailKuldes->addChild('email', $email);
+        $emailKuldes->addChild('emailReplyto',config('szamlazz.email'));
+        $emailKuldes->addChild('emailTargy', $targy);
+        $emailKuldes->addChild('emailSzoveg', $uzenet);
+
+        $xml = $szamla->asXML();
+
+        $date = date('Ym');
+
+        if (!file_exists(storage_path('data/nyugta'))) {
+            mkdir(storage_path('data/nyugta'), 0755, true);
+        }
+
+        if (!file_exists(storage_path('data/nyugta/' . $date))) {
+            mkdir(storage_path('data/nyugta/' . $date), 0755, true);
+        }
+
+        $file = fopen(storage_path('data/nyugta/' . $date . '/' . $nyugtaszam . '_storno_email.xml'), 'w+');
+        fwrite($file, $xml);
+        fclose($file);
+        return $this->sendEmail(storage_path('data/nyugta/' . $date . '/' . $nyugtaszam . '_storno_email.xml'),
+            $nyugtaszam, $date);
+    }
+
+    private function sendEmail($xmlfile = 'nyugta.xml', $nyugtaszam, $date)
     {
         if (!file_exists(storage_path('data/nyugta/' . $date . '/pdf'))) {
             mkdir(storage_path('data/nyugta/' . $date . '/pdf', 0755, true));
         }
 
         $ch = curl_init("https://www.szamlazz.hu/szamla/");
-        $pdf = storage_path('data/nyugta/' . $date . '/pdf/' . $receipt . '_storno.pdf');
-        $cookie_file = storage_path('data/nyugta/nyugta_email_storno_cookie.txt');
+        $pdf = storage_path('data/nyugta/' . $date . '/pdf/' . $nyugtaszam . '_storno_email.pdf');
+        $cookie_file = storage_path('data/nyugta/nyugta_email_cookie.txt');
         if (!file_exists($cookie_file)) {
             $cookie = fopen($cookie_file, 'w');
             fwrite($cookie, '');
@@ -126,7 +161,7 @@ class ReceiptDelete
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-            array('action-szamla_agent_nyugta_storno' => new \CURLFile(realpath($xmlfile))));
+            array('action-szamla_agent_nyugta_send' => new \CURLFile(realpath($xmlfile))));
         curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
         curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_file);
         if (file_exists($cookie_file) && filesize($cookie_file) > 0) {

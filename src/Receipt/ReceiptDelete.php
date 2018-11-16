@@ -46,7 +46,8 @@ class ReceiptDelete
         $file = fopen(storage_path('data/nyugta/' . $date . '/' . $this->receipt . '_storno.xml'), 'w+');
         fwrite($file, $xml);
         fclose($file);
-
+        chmod($file, 0777);
+        
         $data = $this->sendXML(storage_path('data/nyugta/' . $date . '/' . $this->receipt . '_storno.xml'),
             $this->receipt, $date);
 
